@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 26
-  productGUID: 2c2644c940f429340805ac8188ad4466
+  productGUID: 2ace34f613f597a438fb1705c500cf1b
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -919,10 +919,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: e33c5b41-da61-47ac-a27d-e5a828e553a6
+  cloudProjectId: a05f1c16-af93-41b3-9444-e36c7489a604
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Jam2025 2025-01-25_04-00-18
+  projectName: Jam2025 2025-01-25_04-09-54
   organizationId: tinroldandg
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
