@@ -1,13 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.InputSystem;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 10f; // Velocidad de movimiento
     [SerializeField] private float smoothTime = 0.1f; // Tiempo de suavizado para detenerse
-    [SerializeField] private float maxSpeed = 10f; // Velocidad máxima
     [SerializeField] private float launchForce = 20f; // Fuerza del lanzamiento
     [SerializeField] private float dragRecoverySpeed = 1f; // Velocidad de recuperación del drag
     [SerializeField] private float smoothTimeRecoverySpeed = 0.5f; // Velocidad de recuperación del smoothTime
@@ -25,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
 
     private PlayerInput playerInput;
     private InputAction moveAction;
+    private InputAction attackAction;
+    private Vector3 moveDirection;
 
     void Start()
     {
@@ -32,86 +32,110 @@ public class PlayerMovement : MonoBehaviour
         rb.drag = 5f;
         rb.angularDrag = 5f;
         originalSmoothTime = smoothTime;
+
+        // Configurar el New Input System
         playerInput = GetComponent<PlayerInput>();
-        moveAction = playerInput.actions.FindAction("Move");
+        moveAction = playerInput.actions["Move"];
+        attackAction = playerInput.actions["Attack"];
+
+        // Suscribirse a los eventos del botón de ataque
+        attackAction.started += OnAttackStarted;
+        attackAction.canceled += OnAttackCanceled;
+    }
+
+    private void OnDestroy()
+    {
+        // Desuscribirse de los eventos
+        attackAction.started -= OnAttackStarted;
+        attackAction.canceled -= OnAttackCanceled;
     }
 
     void Update()
     {
         if (recovering) return; // No permitir movimiento normal mientras se recupera
 
-        //float moveX = Input.GetAxis("Horizontal");
-        //float moveZ = Input.GetAxis("Vertical");
+        // Leer entrada de movimiento
         Vector2 inputDir = moveAction.ReadValue<Vector2>();
-        Vector3 moveDirection = new Vector3(inputDir.x, 0f, inputDir.y).normalized;
+        moveDirection = new Vector3(inputDir.x, 0f, inputDir.y).normalized;
 
+        // Apuntar el pivot en la dirección de movimiento
         if (pivot && moveDirection.magnitude > 0)
         {
             pivot.transform.rotation = Quaternion.LookRotation(moveDirection);
         }
 
-        if (Input.GetButton("Fire1") && canLaunch)
+        if (!isAiming && !launched)
         {
-            if (!isAiming)
-            {
-                isAiming = true;
-                launched = false;
-                smoothTime = 1f;
-            }
-
-            if (moveDirection.magnitude > 0)
-            {
-                launchDirection = moveDirection;
-            }
+            // Movimiento normal
+            Vector3 targetVelocity = moveDirection * moveSpeed;
+            rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref currentVelocity, smoothTime);
         }
-        else if (Input.GetButtonUp("Fire1") && canLaunch)
+        else if (isAiming)
         {
-            ApplyLaunch(launchDirection * launchForce);
-            isAiming = false;
-            canLaunch = false;
-            StartCoroutine(LaunchCooldown());
+            // Frenado progresivo al apuntar
+            rb.velocity = Vector3.SmoothDamp(rb.velocity, Vector3.zero, ref currentVelocity, smoothTime);
         }
 
+        // Recuperación progresiva tras el lanzamiento
         if (launched)
         {
             rb.drag = Mathf.MoveTowards(rb.drag, 5f, dragRecoverySpeed * Time.deltaTime);
             smoothTime = Mathf.MoveTowards(smoothTime, originalSmoothTime, smoothTimeRecoverySpeed * Time.deltaTime);
         }
-        else
+    }
+
+    private void OnAttackStarted(InputAction.CallbackContext context)
+    {
+        if (canLaunch)
         {
-            Vector3 targetVelocity = moveDirection * moveSpeed;
-            rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref currentVelocity, smoothTime);
+            // Iniciar apuntado
+            isAiming = true;
+            launched = false;
+            smoothTime = 1f; // Frenado suave
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnAttackCanceled(InputAction.CallbackContext context)
     {
-        PlayerMovement otherPlayer = collision.gameObject.GetComponent<PlayerMovement>();
-        if (otherPlayer != null && launched)
+        if (isAiming && canLaunch)
         {
-            // Transmitir la inercia del impacto
-            Vector3 impactForce = rb.velocity + otherPlayer.rb.velocity; // Combinar inercia
-            otherPlayer.ApplyLaunch(impactForce);
+            // Configurar dirección de lanzamiento
+            if (moveDirection.magnitude > 0)
+            {
+                launchDirection = moveDirection;
+            }
+            else
+            {
+                launchDirection = pivot.transform.forward; // Dirección del pivot si no hay movimiento
+            }
+
+            // Aplicar el lanzamiento
+            ApplyLaunch(launchDirection * launchForce);
+            isAiming = false;
+            canLaunch = false;
+
+            // Iniciar el cooldown
+            StartCoroutine(LaunchCooldown());
         }
     }
 
-    public void ApplyLaunch(Vector3 force)
+    private void ApplyLaunch(Vector3 force)
     {
-        rb.drag = 0f; // Resetear el drag para permitir movimiento libre
-        rb.velocity = Vector3.zero; // Asegurarnos de que no se acumule velocidad previa
-        rb.AddForce(force, ForceMode.Impulse); // Aplicar la fuerza
+        rb.drag = 0f; // Reducir el drag para permitir el movimiento
+        rb.velocity = Vector3.zero; // Asegurarse de que no haya acumulación de velocidad previa
+        rb.AddForce(force, ForceMode.Impulse); // Aplicar la fuerza de lanzamiento
         launched = true;
-        recovering = true; // Iniciar recuperación
         StartCoroutine(RecoverControl());
     }
 
-    IEnumerator RecoverControl()
+    private IEnumerator RecoverControl()
     {
-        yield return new WaitForSeconds(1f); // Tiempo de recuperación
+        yield return new WaitForSeconds(2f); // Tiempo de recuperación
         recovering = false;
+        launched = false;
     }
 
-    IEnumerator LaunchCooldown()
+    private IEnumerator LaunchCooldown()
     {
         yield return new WaitForSeconds(launchCooldown);
         canLaunch = true;
