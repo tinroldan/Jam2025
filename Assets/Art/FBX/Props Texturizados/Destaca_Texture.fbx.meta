@@ -3,7 +3,12 @@ guid: 335ced13b94c51944ada5a67ccf4c7fc
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hghlight
+    second: {fileID: 2100000, guid: dad1adfa5e8c57d4eb1be1265412d133, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
