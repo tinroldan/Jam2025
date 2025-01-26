@@ -48,7 +48,7 @@
                 {
                     "name": "",
                     "id": "08dfaee9-a3da-42dc-8b12-5b9ff7925c3d",
-                    "path": "<Keyboard>/x",
+                    "path": "<Keyboard>/p",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",
