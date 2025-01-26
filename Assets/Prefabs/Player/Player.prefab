@@ -808,6 +808,9 @@ MonoBehaviour:
   anim: {fileID: 5537907770780796060}
   bubbles: 0
   maxBubbles: 3
+  hamsterDensity: 0.5
+  hamsterbubble: {fileID: 8216376992458305072}
+  recoveryBubbles: 0
 --- !u!114 &1167642924512868620
 MonoBehaviour:
   m_ObjectHideFlags: 0

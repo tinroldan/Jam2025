@@ -2,10 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DuckProp : MonoBehaviour, ICollisionProp
+public class PlayerPoints : MonoBehaviour
 {
-    [SerializeField] public float BounceRate;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -16,10 +14,5 @@ public class DuckProp : MonoBehaviour, ICollisionProp
     void Update()
     {
         
-    }
-
-    void ICollisionProp.OnPlayerCollision(float bounceRate)
-    {
-        Debug.Log("El que lo lea es gay");
     }
 }

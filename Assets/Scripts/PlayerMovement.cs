@@ -17,6 +17,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Animator anim; // Pivot con la flecha
     [SerializeField] private float bubbles=0;
     [SerializeField] private float maxBubbles = 3;
+    [SerializeField] private float hamsterDensity = 0.5f;
+    [SerializeField] private MeshRenderer hamsterbubble;
+
+    [SerializeField] private float recoveryBubbles = 0;
 
     private Rigidbody rb;
     private Vector3 currentVelocity; // Velocidad actual para SmoothDamp
@@ -30,11 +34,14 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 moveDirection;
     private float initialSpeed;
     private bool xlr8;
-    private List <GameObject> myBubbles;
+    private List <BoostBubble> myBubbles;
+
+    private float initialDensity;
+    private bool hasBubble;
 
     void Start()
     {
-        myBubbles = new List<GameObject>();
+        myBubbles = new List<BoostBubble>();
         rb = GetComponent<Rigidbody>();
         originalDrag = rb.drag;
         rb.angularDrag = 5f;
@@ -49,6 +56,8 @@ public class PlayerMovement : MonoBehaviour
         // Suscribirse a los eventos del botón de ataque
         attackAction.started += OnAttackStarted;
         attackAction.canceled += OnAttackCanceled;
+        initialDensity = rb.mass;
+        hasBubble = true;
     }
 
     private void OnDestroy()
@@ -58,36 +67,68 @@ public class PlayerMovement : MonoBehaviour
         attackAction.canceled -= OnAttackCanceled;
     }
 
+    public void ExploteBubble()
+    {
+        rb.mass = hamsterDensity;
+        hasBubble = false;
+        hamsterbubble.enabled = false;
+        smoothTime = 3;
+        recoveryBubbles = 0;
+
+        foreach (var item in myBubbles)
+        {
+            item.gameObject.SetActive(true);
+            item.transform.position = gameObject.transform.position;
+            item.DropBubble();
+            
+        }
+        myBubbles.Clear();
+    }
+
+    public void ReturBubble()
+    {
+        rb.mass = initialDensity;
+        hasBubble = true;
+        hamsterbubble.enabled = true;
+        smoothTime = originalSmoothTime;
+        recoveryBubbles = 0;
+
+    }
+
     void Update()
     {
         // Leer entrada de movimiento
         Vector2 inputDir = moveAction.ReadValue<Vector2>();
         moveDirection = new Vector3(inputDir.x, 0f, inputDir.y).normalized;
 
-        if(xlr8)
+        if (hasBubble)
         {
-            
-            if(bubbles>0)
+            if (xlr8)
             {
-                moveSpeed = moveSpeedBoost;
-                bubbles -= 1 * Time.deltaTime;
-                if(bubbles<myBubbles.Count)
+
+                if (bubbles > 0)
                 {
-                    if ((myBubbles.Count - 1) >= 0)
+                    moveSpeed = moveSpeedBoost;
+                    bubbles -= 1 * Time.deltaTime;
+                    if (bubbles < myBubbles.Count)
                     {
-                        myBubbles[myBubbles.Count - 1].gameObject.SetActive(true);
-                        myBubbles[myBubbles.Count - 1].transform.position = gameObject.transform.position;
-                        myBubbles.Remove(myBubbles[myBubbles.Count - 1]);
+                        if ((myBubbles.Count - 1) >= 0)
+                        {
+                            myBubbles[myBubbles.Count - 1].gameObject.SetActive(true);
+                            myBubbles[myBubbles.Count - 1].transform.position = gameObject.transform.position;
+                            myBubbles[myBubbles.Count - 1].DropBubble();
+                            myBubbles.Remove(myBubbles[myBubbles.Count - 1]);
+                        }
                     }
+
                 }
+                else if (bubbles <= 0)
+                {
+                    bubbles = 0;
+                    moveSpeed = initialSpeed;
+                    //xlr8 = false;
 
-            }
-            else if(bubbles <= 0)
-            {
-                bubbles = 0;
-                moveSpeed = initialSpeed;
-                //xlr8 = false;
-
+                }
             }
         }
 
@@ -141,34 +182,64 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleRecoveryAndMovement()
     {
-        // Recuperación progresiva
-        rb.drag = Mathf.MoveTowards(rb.drag, originalDrag, dragRecoverySpeed * Time.deltaTime);
-        smoothTime = Mathf.MoveTowards(smoothTime, originalSmoothTime, smoothTimeRecoverySpeed * Time.deltaTime);
-
-        // Movimiento del jugador durante la recuperación
-        Vector3 playerForce = moveDirection * moveSpeed;
-        rb.AddForce(playerForce, ForceMode.Force);
-
-        // Finalizar recuperación si los valores han vuelto a la normalidad
-        if (Mathf.Approximately(rb.drag, originalDrag) && Mathf.Approximately(smoothTime, originalSmoothTime))
+        if (hasBubble)
         {
-            launched = false; // Salir del estado lanzado
+            // Recuperación progresiva
+            rb.drag = Mathf.MoveTowards(rb.drag, originalDrag, dragRecoverySpeed * Time.deltaTime);
+            smoothTime = Mathf.MoveTowards(smoothTime, originalSmoothTime, smoothTimeRecoverySpeed * Time.deltaTime);
+
+            // Movimiento del jugador durante la recuperación
+            Vector3 playerForce = moveDirection * moveSpeed;
+            rb.AddForce(playerForce, ForceMode.Force);
+
+            // Finalizar recuperación si los valores han vuelto a la normalidad
+            if (Mathf.Approximately(rb.drag, originalDrag) && Mathf.Approximately(smoothTime, originalSmoothTime))
+            {
+                launched = false; // Salir del estado lanzado
+            }
+        }
+        else
+        {
+            rb.drag = Mathf.MoveTowards(rb.drag, originalDrag, dragRecoverySpeed * Time.deltaTime);
+            smoothTime = Mathf.MoveTowards(smoothTime, 0, smoothTimeRecoverySpeed * Time.deltaTime);
+
+            Vector3 playerForce = moveDirection * moveSpeed;
+            rb.AddForce(playerForce, ForceMode.Force);
+
+            if (Mathf.Approximately(rb.drag, originalDrag) && Mathf.Approximately(smoothTime, 0))
+            {
+                launched = false; 
+            }
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (bubbles < maxBubbles)
+        BoostBubble bubble = other.gameObject.GetComponent<BoostBubble>();
+
+        if (hasBubble)
         {
-            BoostBubble bubble = other.gameObject.GetComponent<BoostBubble>();
-            if (bubble != null && bubble.GetLastPlayer() != this)
+            if (bubbles < maxBubbles)
             {
-                bubble.SetLastPlayer(this);
-                myBubbles.Add(other.gameObject);
-                bubble.gameObject.SetActive(false);
-                bubbles = myBubbles.Count;
+                if (bubble != null && bubble.GetLastPlayer() != this)
+                {
+                    bubble.SetLastPlayer(this);
+                    myBubbles.Add(bubble);
+                    bubble.gameObject.SetActive(false);
+                    bubbles = myBubbles.Count;
+                }
             }
         }
+        else
+        {
+            recoveryBubbles += 1;
+            bubble.gameObject.SetActive(false);
+            if (recoveryBubbles >= 3)
+            {
+                ReturBubble();
+            }
+        }
+           
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -183,6 +254,28 @@ public class PlayerMovement : MonoBehaviour
             // Aplicar lanzamiento a ambos jugadores
             ApplyLaunch(impactForce);
             otherPlayer.ApplyLaunch(-impactForce);
+        }
+
+        ICollisionProp prop = collision.gameObject.GetComponent<ICollisionProp>();
+
+        if(prop!=null)
+        {
+           if(prop is DuckProp)
+           {
+                Vector3 relativeVelocity = rb.velocity;
+                Vector3 impactForce = (relativeVelocity * launchForceMultiplier)* 1.2f;
+                ExploteBubble();
+                // Aplicar lanzamiento a ambos jugadores
+                ApplyLaunch(impactForce);
+           }
+        }
+
+        if (hasBubble == false)
+        {
+            if (collision.gameObject.CompareTag("ground"))
+            {
+                smoothTime = 0;
+            }
         }
     }
 }
