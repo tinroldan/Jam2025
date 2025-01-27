@@ -3,12 +3,7 @@ guid: b5828dd80c96fc24291f4569f1447d97
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Sponge
-    second: {fileID: 2100000, guid: 231c9694687150941b193eb1c436c3e0, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
