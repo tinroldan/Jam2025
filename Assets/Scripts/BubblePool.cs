@@ -39,12 +39,10 @@ public class BubblePool : MonoBehaviour
     void Update()
     {
         cooldownValue -= Time.deltaTime;
-        Debug.Log(cooldownValue);
         if (cooldownValue <= 0)
         {
             SpawnBubble();
             cooldownValue = cooldownRate;
-            Debug.LogWarning("CUMMMMMM");
         }
     }
 
