@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ground
   - Water
+  - Bounds
   layers:
   - Default
   - TransparentFX
