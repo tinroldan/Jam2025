@@ -48,6 +48,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         uiPoints = Instantiate(uiPointsPrefab).GetComponent<PlayerPoints>();
+        GameManager.Instance.SetNewPlayer(uiPoints);
         ImDie = false;
         myBubbles = new List<BoostBubble>();
         rb = GetComponent<Rigidbody>();
