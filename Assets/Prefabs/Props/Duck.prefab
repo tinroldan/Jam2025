@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5475669733033795457}
   - component: {fileID: 8467971097697781490}
   - component: {fileID: 5249334326990601660}
+  - component: {fileID: 5961239882478780701}
   m_Layer: 0
   m_Name: Duck
   m_TagString: Untagged
@@ -171,3 +172,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BounceRate: 2
+--- !u!114 &5961239882478780701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4028665771581820333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1845783c8ad884846b7fa1bb384699d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startPos: {x: 0, y: 0, z: 0}
