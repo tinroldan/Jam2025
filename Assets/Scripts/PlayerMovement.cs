@@ -22,6 +22,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float recoveryBubbles = 0;
 
+    private PlayerPoints uiPoints;
+    [SerializeField] private GameObject uiPointsPrefab;
+
     private Rigidbody rb;
     private Vector3 currentVelocity; // Velocidad actual para SmoothDamp
     private bool launched = false; // Si está en estado lanzado
@@ -34,13 +37,18 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 moveDirection;
     private float initialSpeed;
     private bool xlr8;
-    private List <BoostBubble> myBubbles;
+    [SerializeField]private List <BoostBubble> myBubbles;
 
     private float initialDensity;
     private bool hasBubble;
+    private bool isGround;
+
+    public bool ImDie;
 
     void Start()
     {
+        uiPoints = Instantiate(uiPointsPrefab).GetComponent<PlayerPoints>();
+        ImDie = false;
         myBubbles = new List<BoostBubble>();
         rb = GetComponent<Rigidbody>();
         originalDrag = rb.drag;
@@ -60,6 +68,11 @@ public class PlayerMovement : MonoBehaviour
         hasBubble = true;
     }
 
+    public PlayerPoints GetPlayerPointsUI()
+    {
+        return uiPoints;
+    }
+
     private void OnDestroy()
     {
         // Desuscribirse de los eventos
@@ -69,20 +82,24 @@ public class PlayerMovement : MonoBehaviour
 
     public void ExploteBubble()
     {
-        rb.mass = hamsterDensity;
-        hasBubble = false;
-        hamsterbubble.enabled = false;
-        smoothTime = 3;
-        recoveryBubbles = 0;
-
-        foreach (var item in myBubbles)
+        if (hasBubble)
         {
-            item.gameObject.SetActive(true);
-            item.transform.position = gameObject.transform.position;
-            item.DropBubble();
-            
+            rb.mass = hamsterDensity;
+            hasBubble = false;
+            hamsterbubble.enabled = false;
+            smoothTime = 3;
+            recoveryBubbles = 0;
+            //rb.constraints = RigidbodyConstraints.FreezePositionY;
+            foreach (var item in myBubbles)
+            {
+                item.gameObject.SetActive(true);
+                item.transform.position = gameObject.transform.position;
+                item.DropBubble();
+
+            }
+            myBubbles.Clear();
+            bubbles = myBubbles.Count;
         }
-        myBubbles.Clear();
     }
 
     public void ReturBubble()
@@ -92,11 +109,44 @@ public class PlayerMovement : MonoBehaviour
         hamsterbubble.enabled = true;
         smoothTime = originalSmoothTime;
         recoveryBubbles = 0;
+        //rb.constraints = RigidbodyConstraints.None;
+
 
     }
 
+    private void OnCollisionStay(Collision collision)
+    {
+
+        if (hasBubble == false&& isGround==false)
+        {
+            if (collision.gameObject.CompareTag("ground"))
+            {
+                smoothTime = 0;
+
+                isGround = true;
+            }
+        }
+
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (hasBubble == false)
+        {
+            if (collision.gameObject.CompareTag("ground"))
+            {
+                smoothTime = initialSmoothTime;
+                isGround = false;
+            }
+        }
+    }
+
+
+
     void Update()
     {
+        if (ImDie)
+            return;
         // Leer entrada de movimiento
         Vector2 inputDir = moveAction.ReadValue<Vector2>();
         moveDirection = new Vector3(inputDir.x, 0f, inputDir.y).normalized;
@@ -200,50 +250,92 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            rb.drag = Mathf.MoveTowards(rb.drag, originalDrag, dragRecoverySpeed * Time.deltaTime);
-            smoothTime = Mathf.MoveTowards(smoothTime, 0, smoothTimeRecoverySpeed * Time.deltaTime);
-
-            Vector3 playerForce = moveDirection * moveSpeed;
-            rb.AddForce(playerForce, ForceMode.Force);
-
-            if (Mathf.Approximately(rb.drag, originalDrag) && Mathf.Approximately(smoothTime, 0))
+            if (isGround)
             {
-                launched = false; 
+                rb.drag = Mathf.MoveTowards(rb.drag, originalDrag, dragRecoverySpeed * Time.deltaTime);
+                smoothTime = Mathf.MoveTowards(smoothTime, 0, smoothTimeRecoverySpeed * Time.deltaTime);
+
+                Vector3 playerForce = moveDirection * moveSpeed;
+                rb.AddForce(playerForce, ForceMode.Force);
+
+                if (Mathf.Approximately(rb.drag, originalDrag) && Mathf.Approximately(smoothTime, 0))
+                {
+                    launched = false;
+                }
+            }
+            else
+            {
+                rb.drag = Mathf.MoveTowards(rb.drag, originalDrag, dragRecoverySpeed * Time.deltaTime);
+                smoothTime = Mathf.MoveTowards(smoothTime, 1f, smoothTimeRecoverySpeed * Time.deltaTime);
+
+                Vector3 playerForce = moveDirection * moveSpeed;
+                rb.AddForce(playerForce, ForceMode.Force);
+
+                if (Mathf.Approximately(rb.drag, originalDrag) && Mathf.Approximately(smoothTime, 1f))
+                {
+                    launched = false;
+                }
             }
         }
+    }
+
+    public void DieEvent()
+    {
+        ImDie = true;
+        gameObject.SetActive(false);
+        
+    }
+    public void ResetLive()
+    {
+        rb.mass = initialDensity;
+        hasBubble = true;
+        hamsterbubble.enabled = true;
+        smoothTime = originalSmoothTime;
+        recoveryBubbles = 0;
+        //rb.constraints = RigidbodyConstraints.None;
+        myBubbles.Clear();
+        bubbles = myBubbles.Count;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         BoostBubble bubble = other.gameObject.GetComponent<BoostBubble>();
-
-        if (hasBubble)
-        {
+        
             if (bubbles < maxBubbles)
             {
                 if (bubble != null && bubble.GetLastPlayer() != this)
                 {
-                    bubble.SetLastPlayer(this);
-                    myBubbles.Add(bubble);
-                    bubble.gameObject.SetActive(false);
-                    bubbles = myBubbles.Count;
+                    if (hasBubble)
+                    {
+                        bubble.SetLastPlayer(this);
+                        myBubbles.Add(bubble);
+                        bubble.gameObject.SetActive(false);
+                        bubbles = myBubbles.Count;
+                    }
+                    else
+                    {
+                        recoveryBubbles += 1;
+                        bubble.gameObject.SetActive(false);
+                        if (recoveryBubbles >= 3)
+                        {
+                            ReturBubble();
+                        }
+                    }
                 }
             }
-        }
-        else
-        {
-            recoveryBubbles += 1;
-            bubble.gameObject.SetActive(false);
-            if (recoveryBubbles >= 3)
-            {
-                ReturBubble();
-            }
-        }
-           
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+
+        if (collision.gameObject.CompareTag("Water"))
+        {
+            if (!hasBubble)
+            {
+                DieEvent();
+            }
+        }
+
         PlayerMovement otherPlayer = collision.gameObject.GetComponent<PlayerMovement>();
         if (otherPlayer != null)
         {
@@ -264,18 +356,16 @@ public class PlayerMovement : MonoBehaviour
            {
                 Vector3 relativeVelocity = rb.velocity;
                 Vector3 impactForce = (relativeVelocity * launchForceMultiplier)* 1.2f;
+                
                 ExploteBubble();
+                
                 // Aplicar lanzamiento a ambos jugadores
                 ApplyLaunch(impactForce);
            }
         }
 
-        if (hasBubble == false)
-        {
-            if (collision.gameObject.CompareTag("ground"))
-            {
-                smoothTime = 0;
-            }
-        }
+        
+
+        
     }
 }

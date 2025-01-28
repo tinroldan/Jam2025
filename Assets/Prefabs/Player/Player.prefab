@@ -811,6 +811,10 @@ MonoBehaviour:
   hamsterDensity: 0.5
   hamsterbubble: {fileID: 8216376992458305072}
   recoveryBubbles: 0
+  uiPointsPrefab: {fileID: 101591932749775473, guid: cb343da626c749d4da1a8e9f35731f6c,
+    type: 3}
+  myBubbles: []
+  ImDie: 0
 --- !u!114 &1167642924512868620
 MonoBehaviour:
   m_ObjectHideFlags: 0
