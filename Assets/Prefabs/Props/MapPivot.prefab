@@ -630,35 +630,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ground
       objectReference: {fileID: 0}
-    - target: {fileID: 2839204481488256002, guid: d56dae6708fd0e042a4b38913bc9c6d0,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3135376510327282120, guid: d56dae6708fd0e042a4b38913bc9c6d0,
-        type: 3}
-      propertyPath: m_Size.y
-      value: 2.0066414
-      objectReference: {fileID: 0}
-    - target: {fileID: 3135376510327282120, guid: d56dae6708fd0e042a4b38913bc9c6d0,
-        type: 3}
-      propertyPath: m_Size.z
-      value: 2.8483224
-      objectReference: {fileID: 0}
-    - target: {fileID: 3135376510327282120, guid: d56dae6708fd0e042a4b38913bc9c6d0,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3135376510327282120, guid: d56dae6708fd0e042a4b38913bc9c6d0,
-        type: 3}
-      propertyPath: m_Center.y
-      value: 0.37828687
-      objectReference: {fileID: 0}
     - target: {fileID: 3380830810653087749, guid: d56dae6708fd0e042a4b38913bc9c6d0,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.458
+      value: 0.274
       objectReference: {fileID: 0}
     - target: {fileID: 4990941665641432002, guid: d56dae6708fd0e042a4b38913bc9c6d0,
         type: 3}
@@ -715,11 +690,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7811136131328003223, guid: d56dae6708fd0e042a4b38913bc9c6d0,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 5622941690012719480, guid: d56dae6708fd0e042a4b38913bc9c6d0, type: 3}
@@ -757,7 +727,7 @@ MonoBehaviour:
   waterLevelTimer: 15
   waterTimerRange: {x: 7, y: 10}
   maxWaterHeight: 1.2
-  floodingSpeed: 1.5
+  floodingSpeed: 0.35
 --- !u!1001 &7183394950909976175
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1189,7 +1159,7 @@ PrefabInstance:
     - target: {fileID: 4369444366236292887, guid: 40ea47918296a064791bfdd6e7e27ae7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.94
+      value: 3.52
       objectReference: {fileID: 0}
     - target: {fileID: 4369444366236292887, guid: 40ea47918296a064791bfdd6e7e27ae7,
         type: 3}
@@ -1234,17 +1204,7 @@ PrefabInstance:
     - target: {fileID: 8467971097697781490, guid: 40ea47918296a064791bfdd6e7e27ae7,
         type: 3}
       propertyPath: m_Drag
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8467971097697781490, guid: 40ea47918296a064791bfdd6e7e27ae7,
-        type: 3}
-      propertyPath: m_AngularDrag
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8467971097697781490, guid: 40ea47918296a064791bfdd6e7e27ae7,
-        type: 3}
-      propertyPath: m_Constraints
-      value: 90
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
