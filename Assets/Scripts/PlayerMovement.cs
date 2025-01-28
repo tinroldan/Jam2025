@@ -358,15 +358,20 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 relativeVelocity = rb.velocity;
                 Vector3 impactForce = (relativeVelocity * launchForceMultiplier)* 1.2f;
                 
-                ExploteBubble();
+                //ExploteBubble();
                 
                 // Aplicar lanzamiento a ambos jugadores
                 ApplyLaunch(impactForce);
            }
         }
 
-        
+        if (collision.gameObject.CompareTag("pipe"))
+        {
+            ExploteBubble();
+        }
 
-        
+
+
+
     }
 }

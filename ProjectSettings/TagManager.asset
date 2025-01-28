@@ -7,6 +7,7 @@ TagManager:
   - ground
   - Water
   - Bounds
+  - pipe
   layers:
   - Default
   - TransparentFX
