@@ -6,9 +6,9 @@ PhysicMaterial:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Drain
-  dynamicFriction: 10
-  staticFriction: 10
-  bounciness: 1
-  frictionCombine: 3
-  bounceCombine: 3
+  m_Name: Pump_Base
+  dynamicFriction: 5
+  staticFriction: 5
+  bounciness: 0.2
+  frictionCombine: 2
+  bounceCombine: 0

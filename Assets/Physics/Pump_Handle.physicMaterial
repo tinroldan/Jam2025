@@ -6,7 +6,7 @@ PhysicMaterial:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Pump
+  m_Name: Pump_Handle
   dynamicFriction: 5
   staticFriction: 5
   bounciness: 0.2
