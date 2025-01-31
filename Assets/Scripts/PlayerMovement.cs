@@ -283,19 +283,21 @@ public class PlayerMovement : MonoBehaviour
     public void DieEvent()
     {
         ImDie = true;
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
+        rb.isKinematic = true;
         
     }
     public void ResetLive()
     {
+        hamsterbubble.enabled = true;
         rb.mass = initialDensity;
         hasBubble = true;
-        hamsterbubble.enabled = true;
         smoothTime = originalSmoothTime;
         recoveryBubbles = 0;
         //rb.constraints = RigidbodyConstraints.None;
         myBubbles.Clear();
         bubbles = myBubbles.Count;
+        rb.isKinematic = false;
     }
 
     private void OnTriggerEnter(Collider other)
