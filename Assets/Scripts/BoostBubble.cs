@@ -11,6 +11,9 @@ public class BoostBubble : MonoBehaviour
     private Rigidbody rb;
 
     public float forceMagnitude = 5f;
+    public bool isOnAir = false;
+    public float initialHeight;
+
     public PlayerMovement GetLastPlayer()
     {
         return lastPlayer;
@@ -41,6 +44,10 @@ public class BoostBubble : MonoBehaviour
     }
     private void Update()
     {
+        if(isOnAir)
+        {
+            ReturnToLevel();
+        }
     }
 
     public void ApplyRandomHorizontalForce()
@@ -59,5 +66,21 @@ public class BoostBubble : MonoBehaviour
         lastPlayer = null;
         collider.enabled = false;
         collider.enabled = true;
+    }
+
+    private void ReturnToLevel()
+    {
+        float currentHeight = transform.position.y;
+        transform.position = new Vector3( transform.position.x, currentHeight -= (0.3f * Time.deltaTime), transform.position.z);
+        if(transform.position.y <= initialHeight)
+        {
+            isOnAir = false;
+        }
+        //transform.localPosition = new Vector3(transform.localPosition.x, currentWaterHeight += (floodingSpeed * Time.deltaTime), transform.localPosition.z);
+    }
+
+    IEnumerator ResetPosition()
+    {
+        yield break;
     }
 }

@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameObject playerPointsContainer;
     private List<PlayerPoints> allPlayers;
+    private List<PlayerIndicator> playerIndicators;
 
     private void Awake()
     {
@@ -26,11 +27,13 @@ public class GameManager : MonoBehaviour
         allPlayers = new List<PlayerPoints>();
     }
 
-    public void SetNewPlayer(PlayerPoints player)
+    public void SetNewPlayer(PlayerPoints player)//, PlayerIndicator playerIndicator)
     {
         allPlayers.Add(player);
+        //playerIndicators.Add(playerIndicator);
 
         player.transform.SetParent(playerPointsContainer.transform);
+        //playerIndicator.transform.SetParent(gameObject.transform.GetChild(0).transform);    
 
     }
 

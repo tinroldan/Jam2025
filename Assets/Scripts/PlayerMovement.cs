@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -43,11 +45,18 @@ public class PlayerMovement : MonoBehaviour
     private bool hasBubble;
     private bool isGround;
 
+    public int playerId;
+    public Color playerColor;
+    [SerializeField]
+    private GameObject playerIndicatorPrefab;
+    public PlayerIndicator playerIndicator;
+
     public bool ImDie;
 
     void Start()
     {
         uiPoints = Instantiate(uiPointsPrefab).GetComponent<PlayerPoints>();
+        playerIndicator = Instantiate(playerIndicatorPrefab).GetComponent<PlayerIndicator>();
         GameManager.Instance.SetNewPlayer(uiPoints);
         ImDie = false;
         myBubbles = new List<BoostBubble>();
@@ -67,6 +76,11 @@ public class PlayerMovement : MonoBehaviour
         attackAction.canceled += OnAttackCanceled;
         initialDensity = rb.mass;
         hasBubble = true;
+        PlayerManager.Instance.OnPlayerInitialized(this);
+        //playerIndicator.GetComponent<Image>().color = playerColor;
+        playerIndicator.objectSprite.color = playerColor;
+        //playerIndicator.playerColor = playerColor;
+        playerIndicator.objectSprite.enabled = false;
     }
 
     public PlayerPoints GetPlayerPointsUI()
@@ -127,6 +141,10 @@ public class PlayerMovement : MonoBehaviour
                 isGround = true;
             }
         }
+        //if (collision.gameObject.CompareTag("Test"))
+        //{
+        //    Debug.Log("DKAJS");
+        //}
 
     }
 
@@ -141,8 +159,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-
-
 
     void Update()
     {
@@ -168,6 +184,7 @@ public class PlayerMovement : MonoBehaviour
                             myBubbles[myBubbles.Count - 1].gameObject.SetActive(true);
                             myBubbles[myBubbles.Count - 1].transform.position = gameObject.transform.position;
                             myBubbles[myBubbles.Count - 1].DropBubble();
+                            myBubbles[myBubbles.Count - 1].isOnAir = true;
                             myBubbles.Remove(myBubbles[myBubbles.Count - 1]);
                         }
                     }
@@ -285,6 +302,8 @@ public class PlayerMovement : MonoBehaviour
         ImDie = true;
         //gameObject.SetActive(false);
         rb.isKinematic = true;
+        gameObject.SetActive(false);
+        playerIndicator.gameObject.SetActive(false);
         
     }
     public void ResetLive()
@@ -326,6 +345,11 @@ public class PlayerMovement : MonoBehaviour
                     }
                 }
             }
+
+        if (other.CompareTag("Bounds"))
+        {
+            DieEvent();
+        }
     }
 
     private void OnCollisionEnter(Collision collision)

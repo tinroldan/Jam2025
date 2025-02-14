@@ -39,12 +39,12 @@ public class BubblePool : MonoBehaviour
     void Update()
     {
         cooldownValue -= Time.deltaTime;
-        Debug.Log(cooldownValue);
+        //Debug.Log(cooldownValue);
         if (cooldownValue <= 0)
         {
             SpawnBubble();
             cooldownValue = cooldownRate;
-            Debug.LogWarning("CUMMMMMM");
+            //Debug.LogWarning("CUMMMMMM");
         }
     }
 
@@ -59,6 +59,7 @@ public class BubblePool : MonoBehaviour
                 float spawnZ = Random.Range(spawnRangeUp.position.z, spawnRangeDown.position.z);
                 bubb.transform.position = new Vector3(spawnX, 0.8f, spawnZ);
                 bubb.gameObject.SetActive(true);
+                bubb.initialHeight = bubb.transform.position.y;
                 //pooledBubbles[i].gameObject.transform.position.x = Random.Range(spawnRangeUp.position.x, spawnRangeDown.position.x);
                 //return pooledBubbles[i];
                 break;

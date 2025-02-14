@@ -8,6 +8,7 @@ TagManager:
   - Water
   - Bounds
   - pipe
+  - Test
   layers:
   - Default
   - TransparentFX
