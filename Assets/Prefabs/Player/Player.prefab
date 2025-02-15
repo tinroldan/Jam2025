@@ -767,7 +767,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4692802668936368207
 Transform:
   m_ObjectHideFlags: 0
@@ -814,6 +814,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 0153fb1f15cf53d498092b48d1a1886a, type: 2}
+  - {fileID: 2100000, guid: f1ef46f29c01f32429be38f861d49907, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -909,8 +910,9 @@ MonoBehaviour:
   maxBubbles: 3
   hamsterDensity: 0.5
   hamsterbubble: {fileID: 8216376992458305072}
+  outline: {fileID: 2100000, guid: f1ef46f29c01f32429be38f861d49907, type: 2}
   recoveryBubbles: 0
-  uiPointsPrefab: {fileID: 101591932749775473, guid: cb343da626c749d4da1a8e9f35731f6c,
+  uiPointsPrefab: {fileID: 2388224785464659678, guid: d4ebaddbd49cdef449d622af101d5e15,
     type: 3}
   myBubbles: []
   playerId: 0
@@ -918,7 +920,6 @@ MonoBehaviour:
   playerIndicatorPrefab: {fileID: 2347673267510129513, guid: 6a8a126daf6fdb241b06c33360d87c2c,
     type: 3}
   playerIndicator: {fileID: 5924231771046912408}
-  hamsterRig: {fileID: 7251461938908550011}
   ImDie: 0
 --- !u!114 &1167642924512868620
 MonoBehaviour:
@@ -1002,7 +1003,7 @@ Transform:
   m_GameObject: {fileID: 7586727604646327469}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0, y: -0.4, z: 0.682}
+  m_LocalPosition: {x: -0, y: -0.324, z: 0.682}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1036,6 +1037,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: 9dd4da6ff18d7c64593bb687e96e3575, type: 2}
   - {fileID: 2100000, guid: 9dd4da6ff18d7c64593bb687e96e3575, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -2041,12 +2043,6 @@ Transform:
 --- !u!95 &7031651190569628825 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 1971271263153530248, guid: f330aea4196d4b0449c13a7206de23b2,
-    type: 3}
-  m_PrefabInstance: {fileID: 8849060094930407697}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7251461938908550011 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2192254056523727466, guid: f330aea4196d4b0449c13a7206de23b2,
     type: 3}
   m_PrefabInstance: {fileID: 8849060094930407697}
   m_PrefabAsset: {fileID: 0}

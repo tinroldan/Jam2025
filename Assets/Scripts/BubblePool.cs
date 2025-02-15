@@ -57,7 +57,7 @@ public class BubblePool : MonoBehaviour
             {
                 float spawnX = Random.Range(spawnRangeUp.position.x, spawnRangeDown.position.x);
                 float spawnZ = Random.Range(spawnRangeUp.position.z, spawnRangeDown.position.z);
-                bubb.transform.position = new Vector3(spawnX, 0.8f, spawnZ);
+                bubb.transform.position = new Vector3(spawnX, spawnRangeUp.position.y, spawnZ);
                 bubb.gameObject.SetActive(true);
                 bubb.initialHeight = bubb.transform.position.y;
                 //pooledBubbles[i].gameObject.transform.position.x = Random.Range(spawnRangeUp.position.x, spawnRangeDown.position.x);

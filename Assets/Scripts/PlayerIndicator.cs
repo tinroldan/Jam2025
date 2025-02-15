@@ -21,7 +21,8 @@ public class PlayerIndicator : MonoBehaviour
     }
     void Start()
     {
-        mainCam = CameraManager.Instance.cam;
+        //mainCam = CameraManager.Instance.cam;
+        mainCam = Camera.main;
         //obJectSprite.tintColor = playerColor;
         //objectSprite.color = playerColor;   
     }

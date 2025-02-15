@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoostBubble : MonoBehaviour
@@ -17,6 +18,14 @@ public class BoostBubble : MonoBehaviour
     public PlayerMovement GetLastPlayer()
     {
         return lastPlayer;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Water"))
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     private void Awake()
@@ -71,13 +80,15 @@ public class BoostBubble : MonoBehaviour
     private void ReturnToLevel()
     {
         float currentHeight = transform.position.y;
-        transform.position = new Vector3( transform.position.x, currentHeight -= (0.3f * Time.deltaTime), transform.position.z);
+        transform.position = new Vector3( transform.position.x, currentHeight -= (0.5f * Time.deltaTime), transform.position.z);
         if(transform.position.y <= initialHeight)
         {
             isOnAir = false;
         }
         //transform.localPosition = new Vector3(transform.localPosition.x, currentWaterHeight += (floodingSpeed * Time.deltaTime), transform.localPosition.z);
     }
+
+            
 
     IEnumerator ResetPosition()
     {

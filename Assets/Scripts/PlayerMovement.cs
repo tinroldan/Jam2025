@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -21,11 +22,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxBubbles = 3;
     [SerializeField] private float hamsterDensity = 0.5f;
     [SerializeField] private MeshRenderer hamsterbubble;
+    [SerializeField] private Material outline;
 
     [SerializeField] private float recoveryBubbles = 0;
 
     private PlayerPoints uiPoints;
     [SerializeField] private GameObject uiPointsPrefab;
+    private Renderer renderer;
 
     private Rigidbody rb;
     private Vector3 currentVelocity; // Velocidad actual para SmoothDamp
@@ -53,8 +56,60 @@ public class PlayerMovement : MonoBehaviour
 
     public bool ImDie;
 
+    private int pointsP=0;
+
+    public void SetColor()
+    {
+        //renderer.material.ad = new Material(outline);
+
+        //outline.SetColor("_OutlineColor", playerColor);
+
+        if (renderer != null && outline != null)
+        {
+            // Clonar el material para esta instancia
+            Material newMaterial = new Material(outline);
+            newMaterial.SetColor("_OutlineColor", playerColor);
+
+            // Obtener los materiales actuales y agregar el nuevo
+            Material[] materials = renderer.materials;
+            Material[] newMaterials = new Material[materials.Length + 1];
+
+            for (int i = 0; i < materials.Length; i++)
+                newMaterials[i] = materials[i];
+
+            newMaterials[materials.Length] = newMaterial; // Agregar el nuevo material
+
+            // Asignar los nuevos materiales al renderer
+            renderer.materials = newMaterials;
+        }
+        uiPoints.SetProfile(playerColor);
+    }
+
+    public void SetPoints(int points =1)
+    {
+        pointsP += points;
+        UpdatePointsUI();
+    }
+
+    public void RemovePoints(int points = 1)
+    {
+        pointsP -= points;
+        UpdatePointsUI();
+    }
+    
+    public void UpdatePointsUI()
+    {
+        uiPoints.UpdatePoints(pointsP);
+        if(pointsP>=7)
+        {
+            GameManager.Instance.IWon(this);
+        }
+
+    }
+
     void Start()
     {
+        renderer = GetComponent<Renderer>();
         uiPoints = Instantiate(uiPointsPrefab).GetComponent<PlayerPoints>();
         playerIndicator = Instantiate(playerIndicatorPrefab).GetComponent<PlayerIndicator>();
         GameManager.Instance.SetNewPlayer(uiPoints);
@@ -79,8 +134,10 @@ public class PlayerMovement : MonoBehaviour
         PlayerManager.Instance.OnPlayerInitialized(this);
         //playerIndicator.GetComponent<Image>().color = playerColor;
         playerIndicator.objectSprite.color = playerColor;
+        SetColor();
         //playerIndicator.playerColor = playerColor;
         playerIndicator.objectSprite.enabled = false;
+        uiPoints.UpdatePoints(pointsP);
     }
 
     public PlayerPoints GetPlayerPointsUI()
@@ -302,12 +359,14 @@ public class PlayerMovement : MonoBehaviour
         ImDie = true;
         //gameObject.SetActive(false);
         rb.isKinematic = true;
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
+        gameObject.transform.position = PlayerManager.Instance.dieZone.transform.position;
         playerIndicator.gameObject.SetActive(false);
         
     }
     public void ResetLive()
     {
+        ImDie = false;
         hamsterbubble.enabled = true;
         rb.mass = initialDensity;
         hasBubble = true;
@@ -349,6 +408,7 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("Bounds"))
         {
             DieEvent();
+            Debug.Log("Bound!!!!!!!!!!!");
         }
     }
 
@@ -360,6 +420,7 @@ public class PlayerMovement : MonoBehaviour
             if (!hasBubble)
             {
                 DieEvent();
+                Debug.Log("water!!!!!!!!!!!");
             }
         }
 
@@ -382,7 +443,7 @@ public class PlayerMovement : MonoBehaviour
            if(prop is DuckProp)
            {
                 Vector3 relativeVelocity = rb.velocity;
-                Vector3 impactForce = (relativeVelocity * launchForceMultiplier)* 1.2f;
+                Vector3 impactForce = (relativeVelocity * launchForceMultiplier)* collision.gameObject.GetComponent<DuckProp>().BounceRate;
                 
                 //ExploteBubble();
                 
